@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Tools Platform</title>
+    <style>
+        /* Global Styles */
+        * {
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #f5f7fa;
+            color: #333;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            background: linear-gradient(135deg, #6e8efb, #a777e3);
+            color: white;
+            padding: 20px 0;
+            text-align: center;
+            border-radius: 0 0 10px 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            margin: 0;
+            font-size: 2.5rem;
+        }
+        
+        .tagline {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+        
+        /* Navigation */
+        .tabs {
+            display: flex;
+            justify-content: center;
+            margin: 30px 0;
+            flex-wrap: wrap;
+        }
+        
+        .tab-btn {
+            padding: 12px 24px;
+            margin: 0 10px;
+            background: none;
+            border: none;
+            border-radius: 30px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: #555;
+        }
+        
+        .tab-btn.active {
+            background: #6e8efb;
+            color: white;
+            box-shadow: 0 4px 8px rgba(110, 142, 251, 0.3);
+        }
+        
+        /* Tool Containers */
+        .tool-container {
+            display: none;
+            background: white;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            margin-bottom: 30px;
+        }
+        
+        .tool-container.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .tool-title {
+            color: #6e8efb;
+            margin-top: 0;
+            font-size: 1.8rem;
+        }
+        
+        /* Form Elements */
+        .input-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #555;
+        }
+        
+        input[type="text"], input[type="url"], textarea, select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 1rem;
+            transition: border 0.3s ease;
+        }
+        
+        input[type="text"]:focus, input[type="url"]:focus, textarea:focus, select:focus {
+            border-color: #6e8efb;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(110, 142, 251, 0.2);
+        }
+        
+        textarea {
+            min-height: 150px;
+            resize: vertical;
+        }
+        
+        button {
+            background: linear-gradient(135deg, #6e8efb, #a777e3);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+        }
+        
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        /* Results */
+        .result-container {
+            margin-top: 30px;
+            padding: 20px;
+            border-radius: 6px;
+            background-color: #f9f9f9;
+            border-left: 4px solid #6e8efb;
+            display: none;
+        }
+        
+        .result-title {
+            margin-top: 0;
+            color: #555;
+        }
+        
+        /* Loading Indicator */
+        .loader {
+            display: none;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #6e8efb;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+            
+            .tool-container {
+                padding: 20px;
+            }
+            
+            .tab-btn {
+                padding: 10px 15px;
+                margin: 5px;
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>AI Tools Platform</h1>
+            <p class="tagline">Powered by OpenAI API</p>
+        </div>
+    </header>
+    
+    <div class="container">
+        <div class="tabs">
+            <button class="tab-btn active" data-tab="video-summarizer">Video Summarizer</button>
+            <button class="tab-btn" data-tab="resume-builder">Resume Builder</button>
+            <button class="tab-btn" data-tab="voice-assistant">Voice Assistant</button>
+        </div>
+        
+        <!-- Video Summarizer Tool -->
+        <div id="video-summarizer" class="tool-container active">
+            <h2 class="tool-title">Video Summarizer</h2>
+            <p>Get concise summaries of long videos in seconds. Perfect for lectures, meetings, and YouTube videos.</p>
+            
+            <div class="input-group">
+                <label for="video-url">Video URL (YouTube or direct link)</label>
+                <input type="url" id="video-url" placeholder="https://www.youtube.com/watch?v=..." required>
+            </div>
+            
+            <div class="input-group">
+                <label for="summary-length">Summary Length</label>
+                <select id="summary-length">
+                    <option value="short">Short (3-5 bullet points)</option>
+                    <option value="medium" selected>Medium (5-7 bullet points)</option>
+                    <option value="detailed">Detailed (full transcript)</option>
+                </select>
+            </div>
+            
+            <button id="summarize-btn">Summarize Video</button>
+            <div class="loader" id="video-loader"></div>
+            
+            <div class="result-container" id="video-result">
+                <h3 class="result-title">Video Summary</h3>
+                <div id="video-summary-content"></div>
+            </div>
+        </div>
+        
+        <!-- Resume Builder Tool -->
+        <div id="resume-builder" class="tool-container">
+            <h2 class="tool-title">AI Resume Builder</h2>
+            <p>Create a professional resume tailored to your dream job in minutes.</p>
+            
+            <div class="input-group">
+                <label for="full-name">Full Name</label>
+                <input type="text" id="full-name" placeholder="Enter your full name" required>
+            </div>
+            
+            <div class="input-group">
+                <label for="job-title">Desired Job Title</label>
+                <input type="text" id="job-title" placeholder="e.g. Software Engineer" required>
+            </div>
+            
+            <div class="input-group">
+                <label for="job-description">Paste Job Description (for customization)</label>
+                <textarea id="job-description" placeholder="Paste the job description here to optimize your resume..."></textarea>
+            </div>
+            
+            <div class="input-group">
+                <label for="work-experience">Your Work Experience</label>
+                <textarea id="work-experience" placeholder="Describe your work experience (1-2 paragraphs)..." required></textarea>
+            </div>
+            
+            <div class="input-group">
+                <label for="skills">Your Skills (comma separated)</label>
+                <input type="text" id="skills" placeholder="e.g. JavaScript, Python, Project Management" required>
+            </div>
+            
+            <button id="generate-resume-btn">Generate Resume</button>
+            <div class="loader" id="resume-loader"></div>
+            
+            <div class="result-container" id="resume-result">
+                <h3 class="result-title">Your Custom Resume</h3>
+                <div id="resume-content"></div>
+                <button id="download-resume-btn" style="margin-top: 15px;">Download as PDF</button>
+            </div>
+        </div>
+        
+        <!-- Voice Assistant Tool -->
+        <div id="voice-assistant" class="tool-container">
+            <h2 class="tooltitle">Voice Assistant</h2>
+            <p>Speak naturally in Hindi or English and get instant answers to your questions.</p>
+            
+            <div class="input-group">
+                <label for="assistant-language">Select Language</label>
+                <select id="assistant-language">
+                    <option value="hindi">Hindi</option>
+                    <option value="english" selected>English</option>
+                    <option value="bengali">Bengali</option>
+                    <option value="tamil">Tamil</option>
+                    <option value="telugu">Telugu</option>
+                </select>
+            </div>
+            
+            <div style="text-align: center; margin: 30px 0;">
+                <button id="start-listening-btn" style="padding: 15px 30px; font-size: 1.2rem;">
+                    <span id="mic-icon">🎤</span> Start Listening
+                </button>
+                <p id="listening-status" style="margin-top: 10px; color: #666;">Press the button and speak</p>
+            </div>
+            
+            <div class="input-group">
+                <label for="voice-query">Or type your question:</label>
+                <input type="text" id="voice-query" placeholder="Ask anything...">
+                <button id="submit-query-btn" style="margin-top: 10px;">Submit</button>
+            </div>
+            
+            <div class="loader" id="voice-loader"></div>
+            
+            <div class="result-container" id="voice-result">
+                <h3 class="result-title">Assistant Response</h3>
+                <div id="assistant-response"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Tab Switching Functionality
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                // Remove active class from all buttons and containers
+                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                document.querySelectorAll('.tool-container').forEach(c => c.classList.remove('active'));
+                
+                // Add active class to clicked button
+                btn.classList.add('active');
+                
+                // Show corresponding container
+                const tabId = btn.getAttribute('data-tab');
+                document.getElementById(tabId).classList.add('active');
+            });
+        });
+        
+        // OpenAI API Configuration
+        const OPENAI_API_KEY = "YOUR_OPENAI_API_KEY"; // Replace with your actual API key
+        const OPENAI_API_URL = "https://api.openai.com/v1/chat/completions";
+        
+        // Common function to call OpenAI API
+        async function callOpenAI(prompt, maxTokens = 1000) {
+            try {
+                const response = await fetch(OPENAI_API_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${OPENAI_API_KEY}`
+                    },
+                    body: JSON.stringify({
+                        model: "gpt-3.5-turbo",
+                        messages: [{ role: "user", content: prompt }],
+                        temperature: 0.7,
+                        max_tokens: maxTokens
+                    })
+                });
+                
+                const data = await response.json();
+                return data.choices[0].message.content;
+            } catch (error) {
+                console.error("Error calling OpenAI API:", error);
+                return "Sorry, there was an error processing your request. Please try again.";
+            }
+        }
+        
+        // Video Summarizer Functionality
+        document.getElementById('summarize-btn').addEventListener('click', async () => {
+            const videoUrl = document.getElementById('video-url').value;
+            const summaryLength = document.getElementById('summary-length').value;
+            const loader = document.getElementById('video-loader');
+            const resultContainer = document.getElementById('video-result');
+            const summaryContent = document.getElementById('video-summary-content');
+            
+            if (!videoUrl) {
+                alert('Please enter a video URL');
+                return;
+            }
+            
+            // Show loading
+            loader.style.display = 'block';
+            resultContainer.style.display = 'none';
+            document.getElementById('summarize-btn').disabled = true;
+            
+            try {
+                // In a real implementation, you would extract the video transcript here
+                // For demo, we'll simulate a transcript
+                const simulatedTranscript = `
+                    This video discusses three main AI tools with future potential. 
+                    First is the video summarizer, which can condense long videos into short summaries. 
+                    Second is the resume builder that helps create ATS-optimized resumes. 
+                    Third is the multilingual voice assistant for Indian languages. 
+                    Each tool is explained with its market potential and technical requirements.
+                `;
+                
+                // Create prompt based on selected length
+                let prompt;
+                if (summaryLength === 'short') {
+                    prompt = `Summarize the following video content in 3-5 concise bullet points:\n\n${simulatedTranscript}`;
+                } else if (summaryLength === 'medium') {
+                    prompt = `Summarize the following video content in 5-7 bullet points with key details:\n\n${simulatedTranscript}`;
+                } else {
+                    prompt = `Create a detailed summary of the following video content in paragraph form:\n\n${simulatedTranscript}`;
+                }
+                
+                // Call OpenAI API
+                const summary = await callOpenAI(prompt);
+                summaryContent.innerHTML = summary.replace(/\n/g, '<br>');
+                resultContainer.style.display = 'block';
+            } catch (error) {
+                summaryContent.innerHTML = "Error generating summary. Please try again.";
+                resultContainer.style.display = 'block';
+            } finally {
+                loader.style.display = 'none';
+                document.getElementById('summarize-btn').disabled = false;
+            }
+        });
+        
+        // Resume Builder Functionality
+        document.getElementById('generate-resume-btn').addEventListener('click', async () => {
+            const fullName = document.getElementById('full-name').value;
+            const jobTitle = document.getElementById('job-title').value;
+            const workExperience = document.getElementById('work-experience').value;
+            const skills = document.getElementById('skills').value;
+            const jobDescription = document.getElementById('job-description').value;
+            
+            const loader = document.getElementById('resume-loader');
+            const resultContainer = document.getElementById('resume-result');
+            const resumeContent = document.getElementById('resume-content');
+            
+            if (!fullName || !jobTitle || !workExperience || !skills) {
+                alert('Please fill in all required fields');
+                return;
+            }
+            
+            // Show loading
+            loader.style.display = 'block';
+            resultContainer.style.display = 'none';
+            document.getElementById('generate-resume-btn').disabled = true;
+            
+            try {
+                // Create prompt for OpenAI
+                let prompt = `Create a professional resume for ${fullName} applying for ${jobTitle} position. `;
+                prompt += `Work Experience: ${workExperience}. Skills: ${skills}. `;
+                
+                if (jobDescription) {
+                    prompt += `Optimize this resume for the following job description: ${jobDescription}. `;
+                    prompt += `Include relevant keywords from the job description. `;
+                }
+                
+                prompt += `Format the resume with these sections: Professional Summary, Key Qualifications, Technical Skills. `;
+                prompt += `Make the resume ATS-friendly and professional.`;
+                
+                // Call OpenAI API
+                const resumeText = await callOpenAI(prompt, 1500);
+                
+                // Format the response as HTML
+                resumeContent.innerHTML = `
+                    <div style="font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; border: 1px solid #eee;">
+                        ${resumeText.replace(/\n/g, '<br>')}
+                    </div>
+                `;
+                
+                resultContainer.style.display = 'block';
+            } catch (error) {
+                resumeContent.innerHTML = "Error generating resume. Please try again.";
+                resultContainer.style.display = 'block';
+            } finally {
+                loader.style.display = 'none';
+                document.getElementById('generate-resume-btn').disabled = false;
+            }
+        });
+        
+        // Download Resume as PDF (simulated)
+        document.getElementById('download-resume-btn').addEventListener('click', () => {
+            alert('In a production app, this would generate a PDF using libraries like jsPDF or html2pdf.js');
+        });
+        
+        // Voice Assistant Functionality
+        let isListening = false;
+        let recognition;
+        const startListeningBtn = document.getElementById('start-listening-btn');
+        const listeningStatus = document.getElementById('listening-status');
+        const micIcon = document.getElementById('mic-icon');
+        
+        // Initialize speech recognition
+        function initSpeechRecognition() {
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            
+            if (!SpeechRecognition) {
+                alert("Speech recognition not supported in your browser. Try Chrome or Edge.");
+                return;
+            }
+            
+            recognition = new SpeechRecognition();
+            recognition.continuous = false;
+            recognition.interimResults = false;
+            
+            recognition.onstart = function() {
+                isListening = true;
+                micIcon.textContent = '🔴';
+                startListeningBtn.style.background = 'linear-gradient(135deg, #ff5f6d, #ffc371)';
